@@ -1,0 +1,22 @@
+# Schema of files/directories to be backed up
+
+logFile = '/path/to/logfile.log'
+phrase = 'SEEECRET PASSWORD'
+
+backupList = (
+    backup1 = {
+        'directory': '/path/to/backup1',
+        'basedir': '/path',
+        'bucket': 'bucketname',
+        'encrypt': False
+    }
+    
+    backup2 = {
+        'directory': '/path/to/encrypted/backup2',
+        'basedir': '/path/to',
+        'bucket': 'bucketname2',
+        'encrypt': True
+    }
+)
+
+
