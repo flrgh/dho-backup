@@ -3,25 +3,29 @@ import os
 import time
 from collections import namedtuple
 import subprocess
-from Crypto.Cipher import AES
 
-File = namedtuple('File', ['filename', 'basedir', 'size', 'encrypt'], verbose=False, rename=False)
+import dateutil.parser, calendar, datetime
+
+#File = namedtuple('File', ['filename', 'basedir', 'size', 'encrypt'], verbose=False, rename=False)
+from files import File
 
 
+def datetime_to_epoch(time_string):
+    t = dateutil.parser.parse(time_string)
+    return calendar.timegm(t.timetuple())
 
-def get_file_list(backupDirectory, baseDirectory, encrypted):
+def epoch_to_datetime(epoch_time_int):
+    return datetime.datetime.fromtimestamp(epoch_time_int)
+
+
+def get_file_list(backupDirectory, baseDirectory, encrypted, bucketname):
     
     filelist = []
     for root, subFolders, files in os.walk(backupDirectory):
         for file in files:
             fname = os.path.join(root,file)
 
-            f = File(
-                filename = fname,
-                basedir = baseDirectory,
-                size = os.path.getsize(fname),
-                encrypt = encrypted
-            )
+            f = File(fname, baseDirectory, bucketname, encrypted)
 
             filelist.append(f)
 
@@ -43,15 +47,8 @@ def file_md5(filename):
 
 
 
-def encrypt_file(file, key):
-    # key = hashlib.sha256(phrase).digest()    
 
-    pass
-
-def decrypt_file(file, key):
-    decryptor = AES.new(key, mode)
-    plain = decryptor.decrypt(ciphertext)
-    
+def is_stale(bucketname, local_file, remote_file):
     pass
 
 
@@ -97,3 +94,6 @@ def run_bash(command):
     if result.endswith('\n'):
         result = result[:-1]
     return result
+
+
+

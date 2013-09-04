@@ -12,7 +12,6 @@ logit('Backup starting...', logFile)
 totals = [0, 0, 0,]
 
 for item in backupList:
-    print item
     logit('Backing up {directory} to bucket \'{bucket}\' now.'.format(directory=item['directory'], bucket=item['bucket']), logFile)
 
     files_for_backup = get_file_list(backupDirectory=item['directory'], baseDirectory=item['basedir'], encrypted=item['encrypt'])
