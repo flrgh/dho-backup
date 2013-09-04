@@ -4,18 +4,9 @@ import time
 from collections import namedtuple
 import subprocess
 
-import dateutil.parser, calendar, datetime
 
 #File = namedtuple('File', ['filename', 'basedir', 'size', 'encrypt'], verbose=False, rename=False)
 from files import File
-
-
-def datetime_to_epoch(time_string):
-    t = dateutil.parser.parse(time_string)
-    return calendar.timegm(t.timetuple())
-
-def epoch_to_datetime(epoch_time_int):
-    return datetime.datetime.fromtimestamp(epoch_time_int)
 
 
 def get_file_list(backupDirectory, baseDirectory, encrypted, bucketname):
@@ -44,8 +35,6 @@ def file_md5(filename):
         for chunk in iter(lambda: f.read(8192), b''): 
              md5.update(chunk)
     return md5.hexdigest()
-
-
 
 
 def is_stale(bucketname, local_file, remote_file):

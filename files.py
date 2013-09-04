@@ -1,13 +1,13 @@
 import os, random, struct
 import hashlib
-from timetools import epoch_to_datetime
 from Crypto.Cipher import AES
-
+import dateutil.parser, calendar, datetime
 
 from dho import conn, is_uploaded
 
 
 class File(object):
+
 
     def __init__(self, filename, base_dir, backup_bucket_name, encrypt_upload):
         self.name = os.path.abspath(filename)
@@ -22,20 +22,24 @@ class File(object):
         self.encryptOnUpload = encrypt_upload
         return
 
+
     def nice_time(self, string_format=False):
         t = epoch_to_datetime(self.last_modified)
         if string_format:
             return t.strftime('%Y-%m-%d %H:%M:%S')
         else:
             return t
+
     
     def get_checksum(self):
         if not self.checksum:
             self.checksum = md5_checksum(self.name)
         return self.checksum
 
+
     def update_self(self, fname):
         self.__init__(fname)
+
 
     def upload_new(self, ekey=None):
 
@@ -64,6 +68,11 @@ class File(object):
         return
 
 
+    def is_stale(self):
+
+        pass
+
+
     def already_uploaded(self):
 
         return is_uploaded(self.shortname)
@@ -73,13 +82,23 @@ class File(object):
         return "<File %s, last modified %s>" % (self.shortname, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
 
 
+
+
+def datetime_to_epoch(time_string):
+    t = dateutil.parser.parse(time_string)
+    return calendar.timegm(t.utctimetuple())
+
+
+def epoch_to_datetime(epoch_time_int):
+    return datetime.datetime.fromtimestamp(epoch_time_int)
+
+
 def md5_checksum(filename, block_size=1024*128):
     md5 = hashlib.md5()
     with open(filename,'rb') as f: 
         for chunk in iter(lambda: f.read(block_size), b''): 
              md5.update(chunk)
     return md5.hexdigest()
-
 
 
 def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
