@@ -69,8 +69,9 @@ class File(object):
 
 
     def is_stale(self):
+        k = self.bucket.get_key(self.shortname)
+        return (self.last_modified > datetime_to_epoch(k.last_modified)) and not (self.get_checksum() == k.etag.strip('"')
 
-        pass
 
 
     def already_uploaded(self):
