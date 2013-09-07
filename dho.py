@@ -7,7 +7,7 @@ conn = boto.connect_s3(
         aws_secret_access_key = secret_key,
         host = 'objects.dreamhost.com',
         calling_format = boto.s3.connection.OrdinaryCallingFormat(),
-        )
+)
 
 
 def is_uploaded(bucketname, keyname):
