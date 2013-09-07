@@ -17,7 +17,7 @@ class File(object):
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
 
-        self.shortname = self.name[len(file.base_dir)+1:]
+        self.shortname = self.name[len(base_dir)+1:]
         self.bucket = conn.get_bucket(backup_bucket_name)
         self.encryptOnUpload = encrypt_upload
         return
@@ -38,14 +38,14 @@ class File(object):
 
 
     def update_self(self, fname):
-        self.__init__(fname)
+        pass
 
 
     def upload_new(self, ekey=None):
 
         # If it's not already uploaded, make a new s3 object and upload the file            
         if self.encryptOnUpload:
-            src_file = '/tmp/' + self.shortname + '.enc'
+            src_file = '/tmp/bakkkk' + ''.join([str(random.randrange(2**16)) for i in range(32)])
             encrypt_file(ekey, self.name, src_file)
             k = self.bucket.new_key(self.shortname)
             k.set_contents_from_filename(src_file)
@@ -59,24 +59,28 @@ class File(object):
         return
 
 
-    def upload_modified(self):
+    def upload_modified(self, ekey=None):
 
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
-
-        self.upload_new()
+        self.delete_remote()
+        self.upload_new(ekey)
         return
 
+    def delete_remote(self):
+        k = self.bucket.get_key(self.shortname)
+        k.delete()
+        return
 
     def is_stale(self):
         k = self.bucket.get_key(self.shortname)
-        return (self.last_modified > datetime_to_epoch(k.last_modified)) and not (self.get_checksum() == k.etag.strip('"')
+        return (self.last_modified > datetime_to_epoch(k.last_modified)) #and not (self.get_checksum() == k.etag.strip('"'))
 
 
 
     def already_uploaded(self):
 
-        return is_uploaded(self.shortname)
+        return is_uploaded(self.bucket.name, self.shortname)
 
 
     def __repr__(self):
@@ -131,7 +135,7 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
     filesize = os.path.getsize(in_filename)
 
     with open(in_filename, 'rb') as infile:
-        with open(out_filename, 'wb') as outfile:
+        with open(out_filename, 'w+b') as outfile:
             outfile.write(struct.pack('<Q', filesize))
             outfile.write(iv)
 

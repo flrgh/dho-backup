@@ -37,9 +37,6 @@ def file_md5(filename):
     return md5.hexdigest()
 
 
-def is_stale(bucketname, local_file, remote_file):
-    pass
-
 
 def back_it_on_up(files, dho_bucket, logFile, skipSize=1073741824):
     
