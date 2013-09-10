@@ -5,11 +5,43 @@ import dateutil.parser, calendar, datetime
 
 from dho import conn, is_uploaded
 
+class Backup_Zone(object):
+
+    def __init__(self, directory, basedir, bucket, encrypt=False, ekey=None):
+        self.directory = directory
+        self.basedir = basedir
+        self.bucketname = bucket
+        self.encrypt = encrypt
+        self.ekey = ekey
+        return
+
+
+    def backup_all(self):
+
+        for fname in get_file_list(self.directory):
+            f = File(fname, self.basedir, self.bucketname, self.encrypt, self.ekey)
+
+            if not f.already_uploaded():
+                print "Uploading new: " + f.name
+                f.upload_new()
+            elif f.is_stale():
+                print "Uploading modified: " + f.name
+                f.upload_modified()
+            else:
+                print "Skipping: " + f.name
+
+        return
+
+
+
+
+
+
 
 class File(object):
 
 
-    def __init__(self, filename, base_dir, backup_bucket_name, encrypt_upload):
+    def __init__(self, filename, base_dir, backup_bucket_name, encrypt_upload, ekey=None):
         self.name = os.path.abspath(filename)
         self.shortname = os.path.split(self.name)[-1]
         self.parent_directory = os.path.split(self.name)[0]
@@ -20,6 +52,7 @@ class File(object):
         self.shortname = self.name[len(base_dir)+1:]
         self.bucket = conn.get_bucket(backup_bucket_name)
         self.encryptOnUpload = encrypt_upload
+        self.ekey = ekey
         return
 
 
@@ -36,17 +69,14 @@ class File(object):
             self.checksum = md5_checksum(self.name)
         return self.checksum
 
+    
 
-    def update_self(self, fname):
-        pass
-
-
-    def upload_new(self, ekey=None):
+    def upload_new(self):
 
         # If it's not already uploaded, make a new s3 object and upload the file            
         if self.encryptOnUpload:
             src_file = '/tmp/bakkkk' + ''.join([str(random.randrange(2**16)) for i in range(32)])
-            encrypt_file(ekey, self.name, src_file)
+            encrypt_file(self.ekey, self.name, src_file)
             k = self.bucket.new_key(self.shortname)
             k.set_contents_from_filename(src_file)
             os.unlink(src_file)
@@ -59,12 +89,12 @@ class File(object):
         return
 
 
-    def upload_modified(self, ekey=None):
+    def upload_modified(self):
 
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
         self.delete_remote()
-        self.upload_new(ekey)
+        self.upload_new(self.ekey)
         return
 
     def delete_remote(self):
@@ -173,3 +203,12 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
                 outfile.write(decryptor.decrypt(chunk))
 
             outfile.truncate(origsize)
+
+def get_file_list(backupDirectory):
+    
+    filelist = []
+    for root, subFolders, files in os.walk(backupDirectory):
+        for file in files:
+            fname = os.path.join(root,file)            
+            filelist.append(fname)
+    return filelist
