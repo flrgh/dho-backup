@@ -2,6 +2,7 @@ import os, random, struct
 import hashlib
 from Crypto.Cipher import AES
 import dateutil.parser, calendar, datetime, time
+import glob, gzip
 
 from dho import conn, is_uploaded
 from config import logFile
@@ -163,8 +164,36 @@ def logit(message):
     l.close()
 
 
-def rotate_logs(logfile, numlogs=7):
-    pass
+def rotate_logs(logfile, maxlogs=7):
+
+    def logname_to_date(logname):
+        datestring = logname.split('.')[-2]
+        return dateutil.parser.parse(datestring)
+
+    logfiles = sorted(glob.glob(logfile + ".*.gz"), key=logname_to_date)
+
+    print logfiles  
+
+    while len(logfiles) > maxlogs:
+        os.unlink(logfiles.pop(0))
+    return
+
+
+
+def gzip_file(infile, outfile=None):
+
+    if not outfile:
+        outfile = infile + ".gz"
+
+    f_in = open(infile, 'rb')
+    f_out = gzip.open(outfile, 'wb')
+
+    f_out.writelines(f_in)
+
+    f_out.close()
+    f_in.close()
+
+    return
 
 
 def datetime_to_epoch(time_string):

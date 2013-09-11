@@ -1,7 +1,7 @@
 import time
 import dho
 from config import backupList, logFile, enckey
-from files import Backup_Zone, logit, rotate_logs
+from files import Backup_Zone, logit, rotate_logs, gzip_file
 
 
 
@@ -59,4 +59,5 @@ if __name__ == '__main__':
     
     print stats
     logit(stats)
+    gzip_file(logfile, (logfile + "." + time.strftime('%Y-%m-%d') + ".gz"))
     rotate_logs(logFile)
