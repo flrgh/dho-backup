@@ -4,6 +4,8 @@ from Crypto.Cipher import AES
 import dateutil.parser, calendar, datetime
 
 from dho import conn, is_uploaded
+from config import logFile
+
 
 class Backup_Zone(object):
 
@@ -16,39 +18,61 @@ class Backup_Zone(object):
         return
 
 
-    def backup_all(self, testing=True):
+    def backup_all(self, testing=False):
 
-        f_new = []
-        f_modified = []
-        f_skipped = []
-        if testing: print "TESTING ONLY"
+        stats = {
+            'new': [],
+            'modified': [],
+            'unmodified': [],
+            'skipped': [],
+            'failed' : []
+        }
+
 
         for fname in get_file_list(self.directory):
             f = File(fname, self.basedir, self.bucketname, self.encrypt, self.ekey)
 
             if not f.already_uploaded():
-                print "Uploading new: " + f.name
-                f_new.append(f.name)
-                if not testing: f.upload_new()
+                logit("Uploading new: " + f.name)
+                
+                if not testing:
+                    try:
+                        f.upload_new()
+                        stats['new'].append(f.name)
+                            
+                    except KeyboardInterrupt:
+                        logit("User skipped: " + f.name)
+                        stats['skipped'].append(f.name)
+                    
+                    except:
+                        logit("Upload failed: " + f.name)
 
             elif f.is_stale():
-                print "Uploading modified: " + f.name
-                f_modified.append(f.name)
-                if not testing: f.upload_modified()
+                logit("Uploading modified: " + f.name)
+                
+                if not testing:
+                    try:
+                        f.upload_modified()
+                        stats['modified'].append(f.name)
 
+                    except KeyboardInterrupt:
+                        logit("User skipped: " + f.name)
+                        stats['skipped'].append(f.name)
+
+                    except:
+                        logit("Upload failed: " + f.name)
             else:
-                print "Skipping: " + f.name
-                f_skipped.append(f.name)
+                print "Unmodified: " + f.name
+                stats['unmodified'].append(f.name)
 
         if testing:
-            print "New files uploaded: %d" % len(f_new)
-            print "Modified files uploaded: %d" % len(f_modified)
-            print "Files skipped/unmodified: %d" % len(f_skipped)
+            print "New files uploaded: %d" % len(stats['new'])
+            print "Modified files uploaded: %d" % len(stats['modified'])
+            print "Unmodified files: %d" $ len(stats['unmodified'])
+            print "Files skipped: %d" % len(stats['skipped'])
+            print "Failed uploads: %d" % len(stats['failed'])
 
-        return
-
-
-
+        return stats
 
 
 
@@ -131,6 +155,11 @@ class File(object):
     def __repr__(self):
         return "<File %s, last modified %s>" % (self.shortname, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
 
+
+def logit(message):
+    l = open(logFile, 'a')    
+    l.write('{the_time}: {the_message}\n'.format(the_time=time.strftime('%H:%M:%S'), the_message=message))
+    l.close()
 
 
 

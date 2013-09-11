@@ -9,24 +9,6 @@ import subprocess
 from files import File
 
 
-def get_file_list(backupDirectory, baseDirectory, encrypted, bucketname):
-    
-    filelist = []
-    for root, subFolders, files in os.walk(backupDirectory):
-        for file in files:
-            fname = os.path.join(root,file)
-
-            f = File(fname, baseDirectory, bucketname, encrypted)
-
-            filelist.append(f)
-
-    return filelist
-
-
-def logit(message, logfile):
-    l = open(logfile, 'a')    
-    l.write('{the_time}: {the_message}\n'.format(the_time=time.strftime('%H:%M:%S'), the_message=message))
-    l.close()
 
 
 def file_md5(filename):
