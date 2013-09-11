@@ -64,6 +64,7 @@ class Backup_Zone(object):
             else:
                 if testing: print "Unmodified: " + f.name
                 stats['unmodified'].append(f.name)
+                logit("Unmodified: " + f.name)
 
         if testing:
             print "New files uploaded: %d" % len(stats['new'])
