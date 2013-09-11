@@ -16,19 +16,34 @@ class Backup_Zone(object):
         return
 
 
-    def backup_all(self):
+    def backup_all(self, testing=True):
+
+        f_new = []
+        f_modified = []
+        f_skipped = []
+        if testing: print "TESTING ONLY"
 
         for fname in get_file_list(self.directory):
             f = File(fname, self.basedir, self.bucketname, self.encrypt, self.ekey)
 
             if not f.already_uploaded():
                 print "Uploading new: " + f.name
-                f.upload_new()
+                f_new.append(f.name)
+                if not testing: f.upload_new()
+
             elif f.is_stale():
                 print "Uploading modified: " + f.name
-                f.upload_modified()
+                f_modified.append(f.name)
+                if not testing: f.upload_modified()
+
             else:
                 print "Skipping: " + f.name
+                f_skipped.append(f.name)
+
+        if testing:
+            print "New files uploaded: %d" % len(f_new)
+            print "Modified files uploaded: %d" % len(f_modified)
+            print "Files skipped/unmodified: %d" % len(f_skipped)
 
         return
 
@@ -75,7 +90,7 @@ class File(object):
 
         # If it's not already uploaded, make a new s3 object and upload the file            
         if self.encryptOnUpload:
-            src_file = '/tmp/bakkkk' + ''.join([str(random.randrange(2**16)) for i in range(32)])
+            src_file = '/tmp/bakkkk' + ''.join([str(random.randrange(2**16)) for i in range(4)])
             encrypt_file(self.ekey, self.name, src_file)
             k = self.bucket.new_key(self.shortname)
             k.set_contents_from_filename(src_file)
@@ -94,7 +109,7 @@ class File(object):
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
         self.delete_remote()
-        self.upload_new(self.ekey)
+        self.upload_new()
         return
 
     def delete_remote(self):
