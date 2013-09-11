@@ -1,7 +1,7 @@
 import time
 import dho
 from config import backupList, logFile, enckey
-
+from files import Backup_Zone, logit, rotate_logs
 
 
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
        
     totals = [0,0,0]
         
-    for item in backupList:
+    for backup_object in backupList:
 
         bz = Backup_Zone(
             backup_object['directory'],
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         )
     
         
-        logit('''Backing up [{directory}] to bucket [{bucket}] now.'''.format(directory=bz.directory, bucket=bz.bucket))   
+        logit('''Backing up [{directory}] to bucket [{bucket}] now.'''.format(directory=bz.directory, bucket=bz.bucketname))   
     
         statistics = bz.backup_all()
     
@@ -58,4 +58,5 @@ if __name__ == '__main__':
         )
     
     print stats
-    logit(stats, logFile)
+    logit(stats)
+    rotate_logs(logFile)

@@ -1,7 +1,7 @@
 import os, random, struct
 import hashlib
 from Crypto.Cipher import AES
-import dateutil.parser, calendar, datetime
+import dateutil.parser, calendar, datetime, time
 
 from dho import conn, is_uploaded
 from config import logFile
@@ -39,7 +39,7 @@ class Backup_Zone(object):
                     try:
                         f.upload_new()
                         stats['new'].append(f.name)
-                            
+
                     except KeyboardInterrupt:
                         logit("User skipped: " + f.name)
                         stats['skipped'].append(f.name)
@@ -62,13 +62,13 @@ class Backup_Zone(object):
                     except:
                         logit("Upload failed: " + f.name)
             else:
-                print "Unmodified: " + f.name
+                if testing: print "Unmodified: " + f.name
                 stats['unmodified'].append(f.name)
 
         if testing:
             print "New files uploaded: %d" % len(stats['new'])
             print "Modified files uploaded: %d" % len(stats['modified'])
-            print "Unmodified files: %d" $ len(stats['unmodified'])
+            print "Unmodified files: %d" % len(stats['unmodified'])
             print "Files skipped: %d" % len(stats['skipped'])
             print "Failed uploads: %d" % len(stats['failed'])
 
@@ -161,6 +161,9 @@ def logit(message):
     l.write('{the_time}: {the_message}\n'.format(the_time=time.strftime('%H:%M:%S'), the_message=message))
     l.close()
 
+
+def rotate_logs(logfile, numlogs=7):
+    pass
 
 
 def datetime_to_epoch(time_string):
