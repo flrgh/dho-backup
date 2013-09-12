@@ -145,7 +145,11 @@ class File(object):
 
     def is_stale(self):
         k = self.bucket.get_key(self.shortname)
-        return (self.last_modified > datetime_to_epoch(k.last_modified)) #and not (self.get_checksum() == k.etag.strip('"'))
+        
+        if self.encryptOnUpload:
+            return self.last_modified > datetime_to_epoch(k.last_modified)
+        else:
+            return (self.last_modified > datetime_to_epoch(k.last_modified)) and not (self.get_checksum() == k.etag.strip('"'))
 
 
 
@@ -171,8 +175,6 @@ def rotate_logs(logfile, maxlogs=7):
         return dateutil.parser.parse(datestring)
 
     logfiles = sorted(glob.glob(logfile + ".*.gz"), key=logname_to_date)
-
-    print logfiles  
 
     while len(logfiles) > maxlogs:
         os.unlink(logfiles.pop(0))
