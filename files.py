@@ -163,7 +163,7 @@ class File(object):
 
 
 def logit(message):
-    l = open(logFile, 'a')    
+    l = open(logFile, 'a')
     l.write('{the_time}: {the_message}\n'.format(the_time=time.strftime('%H:%M:%S'), the_message=message))
     l.close()
 
@@ -194,6 +194,8 @@ def gzip_file(infile, outfile=None):
 
     f_out.close()
     f_in.close()
+
+    os.unlink(infile)
 
     return
 

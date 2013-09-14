@@ -16,5 +16,3 @@ def is_uploaded(bucketname, keyname):
         return False
     else:
         return True
-
-
