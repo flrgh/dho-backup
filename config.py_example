@@ -1,21 +1,33 @@
-# Schema of files/directories to be backed up
+# Edit this file with the proper details then save as config.py
 
+import hashlib
+
+# Where to save the backup logs
 logFile = '/path/to/logfile.log'
-phrase = 'SEEECRET PASSWORD'
 
+# Password for encrypted backups
+password = 'SEEECRET PASSWORD'
+enckey = hashlib.sha256(password).digest()
+
+# DreamObjects keys
+access_key = 'ACCESS KEY'
+secret_key = 'SECRET KEY'
+
+
+# Directories to be backed up. Add as many as you'd like.
+# No trailing slashes!
 backupList = (
-    backup1 = {
-        'directory': '/path/to/backup1',
-        'basedir': '/path',
-        'bucket': 'bucketname',
-        'encrypt': False
-    }
-    
-    backup2 = {
+    {
+        'directory': '/path/to/backup1',    # We'll backup everything in this directory
+          'basedir': '/path',               # We'll subtract this part of the path from the filename when uploading
+           'bucket': 'bucketname',          # The name of the bucket to upload files to
+          'encrypt': False                  # Do you want to encrypt files before uploading?
+    },
+    {
         'directory': '/path/to/encrypted/backup2',
-        'basedir': '/path/to',
-        'bucket': 'bucketname2',
-        'encrypt': True
+          'basedir': '/path/to',
+           'bucket': 'bucketname2',
+          'encrypt': True
     }
 )
 
