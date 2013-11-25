@@ -18,7 +18,6 @@ if __name__ == '__main__':
 
         bz = Backup_Zone(
             backup_object['directory'],
-            backup_object['basedir'],
             backup_object['bucket'],
             backup_object['encrypt'],
             enckey

@@ -23,7 +23,7 @@ def rename_long_to_short(bz):
             print 'WARNING object, {file} does not exist'.format(file=new_name)
             
         if not TESTING:
-            print 'RENAMING key to {n}'.format(n=new_name)
+            print 'RENAMING key to {n}'.format(n=new_name.encode('ascii', 'ignore'))
             k.copy(k.bucket.name, new_name)
             k.delete()
 

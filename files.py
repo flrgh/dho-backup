@@ -10,9 +10,8 @@ from config import logFile
 
 class Backup_Zone(object):
 
-    def __init__(self, directory, basedir, bucket, encrypt=False, ekey=None):
+    def __init__(self, directory, bucket, encrypt=False, ekey=None):
         self.directory = directory
-        self.basedir = basedir
         self.bucketname = bucket
         self.encrypt = encrypt
         self.ekey = ekey
@@ -31,7 +30,7 @@ class Backup_Zone(object):
 
 
         for fname in get_file_list(self.directory):
-            f = File(fname, self.basedir, self.bucketname, self.encrypt, self.ekey)
+            f = File(fname, self.bucketname, self.encrypt, self.ekey)
 
             if not f.already_uploaded():
                 logit("Uploading new: " + f.name)
@@ -77,20 +76,35 @@ class Backup_Zone(object):
         return stats
 
 
+    def check_orphaned(delete_orphaned=False):
+
+        orphaned = []
+
+        for k in conn.get_bucket(self.bucket).list():
+            if not os.path.exists(k.name):
+                if delete_orphaned:
+                    logit('Deleting ' + k.name)
+                else:
+                    logit('Orphaned: ' + k.name)
+
+            orphaned.append(k.name)
+        return orphaned
+
+
+
+
 
 
 class File(object):
 
 
-    def __init__(self, filename, base_dir, backup_bucket_name, encrypt_upload, ekey=None):
+    def __init__(self, filename, backup_bucket_name, encrypt_upload, ekey=None):
         self.name = os.path.abspath(filename)
-        self.shortname = os.path.split(self.name)[-1]
         self.parent_directory = os.path.split(self.name)[0]
         self.size = os.path.getsize(self.name)
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
 
-        self.shortname = self.name[len(base_dir)+1:]
         self.bucket = conn.get_bucket(backup_bucket_name)
         self.encryptOnUpload = encrypt_upload
         self.ekey = ekey
@@ -118,11 +132,11 @@ class File(object):
         if self.encryptOnUpload:
             src_file = '/tmp/bakkkk' + ''.join([str(random.randrange(2**16)) for i in range(4)])
             encrypt_file(self.ekey, self.name, src_file)
-            k = self.bucket.new_key(self.shortname)
+            k = self.bucket.new_key(self.name)
             k.set_contents_from_filename(src_file)
             os.unlink(src_file)
         else:
-            k = self.bucket.new_key(self.shortname)
+            k = self.bucket.new_key(self.name)
             k.set_contents_from_filename(self.name)
         
         k.set_canned_acl('private')
@@ -139,12 +153,12 @@ class File(object):
         return
 
     def delete_remote(self):
-        k = self.bucket.get_key(self.shortname)
+        k = self.bucket.get_key(self.name)
         k.delete()
         return
 
     def is_stale(self):
-        k = self.bucket.get_key(self.shortname)
+        k = self.bucket.get_key(self.name)
         
         if self.encryptOnUpload:
             return self.last_modified > datetime_to_epoch(k.last_modified)
@@ -155,11 +169,11 @@ class File(object):
 
     def already_uploaded(self):
 
-        return is_uploaded(self.bucket.name, self.shortname)
+        return is_uploaded(self.bucket.name, self.name)
 
 
     def __repr__(self):
-        return "<File %s, last modified %s>" % (self.shortname, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
+        return "<File %s, last modified %s>" % (self.name, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
 
 
 def logit(message):

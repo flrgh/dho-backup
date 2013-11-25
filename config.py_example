@@ -2,9 +2,6 @@
 
 import hashlib
 
-# Where to save the backup logs
-logFile = '/path/to/logfile.log'
-
 # Password for encrypted backups
 password = 'SEEECRET PASSWORD'
 enckey = hashlib.sha256(password).digest()
@@ -18,14 +15,13 @@ secret_key = 'SECRET KEY'
 # No trailing slashes!
 backupList = (
     {
-        'directory': '/path/to/backup1',    # We'll backup everything in this directory
-          'basedir': '/path',               # We'll subtract this part of the path from the filename when uploading
-           'bucket': 'bucketname',          # The name of the bucket to upload files to
-          'encrypt': False                  # Do you want to encrypt files before uploading?
+           'directory' : '/path/to/backup1',    # We'll backup everything in this directory
+              'bucket' : 'bucketname',          # The name of the bucket to upload files to
+             'encrypt' : False                  # Do you want to encrypt files before uploading?
+      'skip_filetypes' : 'mp3, doc'             # Ignore certain file types
     },
     {
         'directory': '/path/to/encrypted/backup2',
-          'basedir': '/path/to',
            'bucket': 'bucketname2',
           'encrypt': True
     }
@@ -34,3 +30,4 @@ backupList = (
 
 # Logging
 default_log_level = 'WARNING'
+logFile = '/path/to/logfile.log'
