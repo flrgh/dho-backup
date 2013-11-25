@@ -32,3 +32,5 @@ backupList = (
 )
 
 
+# Logging
+default_log_level = 'WARNING'
