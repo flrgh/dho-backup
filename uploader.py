@@ -59,4 +59,4 @@ if __name__ == '__main__':
     print stats
     logit(stats)
     gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
-    rotate_logs(logFile)
+    #rotate_logs(logFile)
