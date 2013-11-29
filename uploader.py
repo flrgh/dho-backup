@@ -48,7 +48,13 @@ if __name__ == '__main__':
     
     print 'Aaaand we\'re done here. Some stats:\n'
     
-    stats = '\n\tBackup time: {time} minutes\n\tFiles skipped: {skipped}\n\tFiles Failed: {failed}\n\tFiles uploaded: {uploaded}\n\tTotal: {total}'.format(
+    stats = '''\
+        \tBackup time: {time} minutes
+        \tFiles skipped: {skipped}
+        \tFiles Failed: {failed}
+        \tFiles uploaded: {uploaded}
+        \tTotal: {total}\
+        '''.format(
         time=backupTime,
         skipped=totals[1],
         failed=totals[2],
@@ -58,5 +64,5 @@ if __name__ == '__main__':
     
     print stats
     logit(stats)
-    gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
+    #gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
     #rotate_logs(logFile)

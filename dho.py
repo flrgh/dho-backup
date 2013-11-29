@@ -16,3 +16,12 @@ def is_uploaded(bucketname, keyname):
         return False
     else:
         return True
+
+
+
+backed_up_file = {
+    'filename' : '/path/to/file',
+    'last_modified' : 'timestamp',
+    'md5sum' : 'checksum',
+    'key' : 'name_of_DHO_key'
+}
