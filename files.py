@@ -10,7 +10,7 @@ import time
 import glob
 import gzip
 
-from dho import conn, is_uploaded
+from dho import dho_connect, is_uploaded
 from config import logFile
 
 
@@ -84,7 +84,7 @@ class Backup_Zone(object):
 
         orphaned = []
 
-        for k in conn.get_bucket(self.bucket).list():
+        for k in dho_connect().get_bucket(self.bucket).list():
             if not os.path.exists(k.name):
                 if delete_orphaned:
                     logit('Deleting ' + k.name)
@@ -104,7 +104,7 @@ class File(object):
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
 
-        self.bucket = conn.get_bucket(backup_bucket_name)
+        self.bucket = dho_connect().get_bucket(backup_bucket_name)
         self.encryptOnUpload = encrypt_upload
         self.ekey = ekey
         return

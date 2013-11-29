@@ -2,25 +2,19 @@ import boto
 import boto.s3.connection
 from config import access_key, secret_key
 
-conn = boto.connect_s3(
-    aws_access_key_id=access_key,
-    aws_secret_access_key=secret_key,
-    host='objects.dreamhost.com',
-    calling_format=boto.s3.connection.OrdinaryCallingFormat(),
-)
+
+def dho_connect():
+    return boto.connect_s3(
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
+        host='objects.dreamhost.com',
+        calling_format=boto.s3.connection.OrdinaryCallingFormat(),
+    )
 
 
 def is_uploaded(bucketname, keyname):
-    bucket = conn.get_bucket(bucketname)
+    bucket = dho_connect().get_bucket(bucketname)
     if not bucket.get_key(keyname):
         return False
     else:
         return True
-
-
-backed_up_file = {
-    'filename': '/path/to/file',
-    'last_modified': 'timestamp',
-    'md5sum': 'checksum',
-    'key': 'name_of_DHO_key'
-}
