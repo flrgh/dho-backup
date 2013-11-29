@@ -17,8 +17,8 @@ backupList = (
     {
            'directory' : '/path/to/backup1',    # We'll backup everything in this directory
               'bucket' : 'bucketname',          # The name of the bucket to upload files to
-             'encrypt' : False,                  # Do you want to encrypt files before uploading?
-      'skip_filetypes' : 'mp3, doc'             # Ignorels - certain file types
+             'encrypt' : False,                 # Do you want to encrypt files before uploading?
+      'skip_filetypes' : 'mp3, doc'             # Ignore certain file types
     },
     {
             'directory': '/path/to/encrypted/backup2',
