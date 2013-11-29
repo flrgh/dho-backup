@@ -22,7 +22,7 @@ class Backup_Zone(object):
         self.encrypt = encrypt
         self.ekey = ekey
         self.bucket_contents = [key for key in dho_connect().get_bucket(self.bucketname).list()]
-        self.keynames = [k.name for k in self.bucket_contents]
+        self.key_names = [k.name for k in self.bucket_contents]
         return
 
     def backup_all(self, testing=False):
