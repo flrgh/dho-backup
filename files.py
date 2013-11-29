@@ -21,6 +21,7 @@ class Backup_Zone(object):
         self.bucketname = bucket
         self.encrypt = encrypt
         self.ekey = ekey
+        self.bucket_contents = [key for key in dho_connect().get_bucket(self.bucketname).list()]
         return
 
     def backup_all(self, testing=False):
@@ -36,7 +37,7 @@ class Backup_Zone(object):
         for fname in get_file_list(self.directory):
             f = File(fname, self.bucketname, self.encrypt, self.ekey)
 
-            if not f.already_uploaded():
+            if not self.file_exists(f):
                 logit("Uploading new: " + f.name)
 
                 if not testing:
@@ -51,7 +52,7 @@ class Backup_Zone(object):
                     except:
                         logit("Upload failed: " + f.name)
 
-            elif f.is_stale():
+            elif self.is_stale(f):
                 logit("Uploading modified: " + f.name)
 
                 if not testing:
@@ -80,7 +81,20 @@ class Backup_Zone(object):
 
         return stats
 
-    def check_orphaned(delete_orphaned=False):
+    def file_exists(self, file):
+        return file.keyname in [k.name for k in self.bucket_contents]
+
+    def is_stale(self, file):
+        
+        k = self.bucket_contents[[k.name for k in self.bucket_contents].index(file.keyname)]
+
+        if file.encryptOnUpload:
+            return file.last_modified > datetime_to_epoch(k.last_modified)
+        else:
+            return (file.last_modified > datetime_to_epoch(k.last_modified)) and not (self.get_checksum() == k.etag.strip('"'))
+
+
+    def check_orphaned(self, delete_orphaned=False):
 
         orphaned = []
 
@@ -99,6 +113,7 @@ class File(object):
 
     def __init__(self, filename, backup_bucket_name, encrypt_upload, ekey=None):
         self.name = os.path.abspath(filename)
+        self.keyname = self.name.lstrip('/') # For now
         self.parent_directory = os.path.split(self.name)[0]
         self.size = os.path.getsize(self.name)
         self.last_modified = os.path.getmtime(self.name)
@@ -153,18 +168,18 @@ class File(object):
         k.delete()
         return
 
-    def is_stale(self):
-        k = self.bucket.get_key(self.name)
+    # def is_stale(self):
+    #     k = self.bucket.get_key(self.name)
 
-        if self.encryptOnUpload:
-            return self.last_modified > datetime_to_epoch(k.last_modified)
-        else:
-            return (self.last_modified > datetime_to_epoch(k.last_modified))
-                and not (self.get_checksum() == k.etag.strip('"'))
+    #     if self.encryptOnUpload:
+    #         return self.last_modified > datetime_to_epoch(k.last_modified)
+    #     else:
+    #         return (self.last_modified > datetime_to_epoch(k.last_modified))
+    #             and not (self.get_checksum() == k.etag.strip('"'))
 
-    def already_uploaded(self):
+    # def already_uploaded(self):
 
-        return is_uploaded(self.bucket.name, self.name)
+    #     return is_uploaded(self.bucket.name, self.name)
 
     def __repr__(self):
         return "<File %s, last modified %s>" % (self.name, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
