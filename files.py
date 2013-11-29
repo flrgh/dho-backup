@@ -21,7 +21,11 @@ class Backup_Zone(object):
         self.bucketname = bucket
         self.encrypt = encrypt
         self.ekey = ekey
-        self.bucket_contents = {key.name.decode('utf-8'):key for key in dho_connect().get_bucket(self.bucketname).list()}
+        self.bucket_contents = {
+            key.name.decode('utf-8'):{
+                'last_modified': key.last_modified,
+                'etag': key.etag.strip('"')
+        } for key in dho_connect().get_bucket(self.bucketname).list()}
         #self.key_names = [k.name for k in self.bucket_contents]
         return
 
@@ -90,9 +94,9 @@ class Backup_Zone(object):
         k = self.bucket_contents.get(file.keyname)
 
         if file.encryptOnUpload:
-            return file.last_modified > datetime_to_epoch(k.last_modified)
+            return file.last_modified > datetime_to_epoch(k['last_modified'])
         else:
-            return (file.last_modified > datetime_to_epoch(k.last_modified)) and not (self.get_checksum() == k.etag.strip('"'))
+            return (file.last_modified > datetime_to_epoch(k['last_modified'])) and not (self.get_checksum() == k['etag'])
 
 
     def check_orphaned(self, delete_orphaned=False):
