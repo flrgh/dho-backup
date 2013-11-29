@@ -22,6 +22,7 @@ class Backup_Zone(object):
         self.encrypt = encrypt
         self.ekey = ekey
         self.bucket_contents = [key for key in dho_connect().get_bucket(self.bucketname).list()]
+        self.keynames = [k.name for k in self.bucket_contents]
         return
 
     def backup_all(self, testing=False):
@@ -86,7 +87,7 @@ class Backup_Zone(object):
 
     def is_stale(self, file):
         
-        k = self.bucket_contents[[k.name for k in self.bucket_contents].index(file.keyname)]
+        k = self.bucket_contents[self.key_names.index(file.keyname)]
 
         if file.encryptOnUpload:
             return file.last_modified > datetime_to_epoch(k.last_modified)
@@ -98,7 +99,7 @@ class Backup_Zone(object):
 
         orphaned = []
 
-        for k in dho_connect().get_bucket(self.bucket).list():
+        for k in dho_connect().get_bucket(self.bucketname).list():
             if not os.path.exists(k.name):
                 if delete_orphaned:
                     logit('Deleting ' + k.name)
@@ -119,7 +120,7 @@ class File(object):
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
 
-        self.bucket = dho_connect().get_bucket(backup_bucket_name)
+        self.bucketname = backup_bucket_name
         self.encryptOnUpload = encrypt_upload
         self.ekey = ekey
         return
@@ -144,11 +145,11 @@ class File(object):
             src_file = '/tmp/bakkkk' + \
                 ''.join([str(random.randrange(2 ** 16)) for i in range(4)])
             encrypt_file(self.ekey, self.name, src_file)
-            k = self.bucket.new_key(self.name)
+            k = self.dho_connect().get_bucket(self.bucketname).new_key(self.name)
             k.set_contents_from_filename(src_file)
             os.unlink(src_file)
         else:
-            k = self.bucket.new_key(self.name)
+            k = self.dho_connect().get_bucket(self.bucketname).new_key(self.name)
             k.set_contents_from_filename(self.name)
 
         k.set_canned_acl('private')
@@ -164,7 +165,7 @@ class File(object):
         return
 
     def delete_remote(self):
-        k = self.bucket.get_key(self.name)
+        k = self.dho_connect().get_bucket(self.bucketname).get_key(self.name)
         k.delete()
         return
 
