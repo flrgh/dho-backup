@@ -22,7 +22,7 @@ class Backup_Zone(object):
         self.encrypt = encrypt
         self.ekey = ekey
         self.bucket_contents = [key for key in dho_connect().get_bucket(self.bucketname).list()]
-        self.key_names = [k.name for k in self.bucket_contents]
+        #self.key_names = [k.name for k in self.bucket_contents]
         return
 
     def backup_all(self, testing=False):
@@ -87,7 +87,7 @@ class Backup_Zone(object):
 
     def is_stale(self, file):
         
-        k = self.bucket_contents[self.key_names.index(file.keyname)]
+        k = self.bucket_contents[list(k.name for k in self.bucket_contents).index(file.keyname)]
 
         if file.encryptOnUpload:
             return file.last_modified > datetime_to_epoch(k.last_modified)
@@ -145,11 +145,11 @@ class File(object):
             src_file = '/tmp/bakkkk' + \
                 ''.join([str(random.randrange(2 ** 16)) for i in range(4)])
             encrypt_file(self.ekey, self.name, src_file)
-            k = self.dho_connect().get_bucket(self.bucketname).new_key(self.name)
+            k = dho_connect().get_bucket(self.bucketname).new_key(self.name)
             k.set_contents_from_filename(src_file)
             os.unlink(src_file)
         else:
-            k = self.dho_connect().get_bucket(self.bucketname).new_key(self.name)
+            k = dho_connect().get_bucket(self.bucketname).new_key(self.name)
             k.set_contents_from_filename(self.name)
 
         k.set_canned_acl('private')
@@ -165,7 +165,7 @@ class File(object):
         return
 
     def delete_remote(self):
-        k = self.dho_connect().get_bucket(self.bucketname).get_key(self.name)
+        k = dho_connect().get_bucket(self.bucketname).get_key(self.name)
         k.delete()
         return
 
@@ -310,11 +310,16 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24 * 1024):
             outfile.truncate(origsize)
 
 
-def get_file_list(backupDirectory):
+# def get_file_list(backupDirectory):
 
-    filelist = []
+#     filelist = []
+#     for root, subFolders, files in os.walk(backupDirectory):
+#         for file in files:
+#             fname = os.path.join(root, file)
+#             filelist.append(fname)
+#     return filelist
+
+def get_file_list(backupDirectory):
     for root, subFolders, files in os.walk(backupDirectory):
         for file in files:
-            fname = os.path.join(root, file)
-            filelist.append(fname)
-    return filelist
+            yield os.path.join(root, file)
