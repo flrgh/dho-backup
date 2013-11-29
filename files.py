@@ -21,7 +21,7 @@ class Backup_Zone(object):
         self.bucketname = bucket
         self.encrypt = encrypt
         self.ekey = ekey
-        self.bucket_contents = [key for key in dho_connect().get_bucket(self.bucketname).list()]
+        self.bucket_contents = {key.name:key for key in dho_connect().get_bucket(self.bucketname).list()}
         #self.key_names = [k.name for k in self.bucket_contents]
         return
 
@@ -83,11 +83,11 @@ class Backup_Zone(object):
         return stats
 
     def file_exists(self, file):
-        return file.keyname in [k.name for k in self.bucket_contents]
+        return file.keyname in self.bucket_contents.keys()
 
     def is_stale(self, file):
         
-        k = self.bucket_contents[list(k.name for k in self.bucket_contents).index(file.keyname)]
+        k = self.bucket_contents.get(file.keyname)
 
         if file.encryptOnUpload:
             return file.last_modified > datetime_to_epoch(k.last_modified)
