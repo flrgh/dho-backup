@@ -86,7 +86,7 @@ class Backup_Zone(object):
         return stats
 
     def file_exists(self, file):
-        return file.keyname.encode('utf-8') in self.bucket_contents.keys()
+        return file.keyname in self.bucket_contents.keys()
 
     def is_stale(self, file):
         
