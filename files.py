@@ -172,18 +172,6 @@ class File(object):
         k.delete()
         return
 
-    # def is_stale(self):
-    #     k = self.bucket.get_key(self.name)
-
-    #     if self.encryptOnUpload:
-    #         return self.last_modified > datetime_to_epoch(k.last_modified)
-    #     else:
-    #         return (self.last_modified > datetime_to_epoch(k.last_modified))
-    #             and not (self.get_checksum() == k.etag.strip('"'))
-
-    # def already_uploaded(self):
-
-    #     return is_uploaded(self.bucket.name, self.name)
 
     def __repr__(self):
         return "<File %s, last modified %s>" % (self.name, self.nice_time(string_format=True))
@@ -312,15 +300,6 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24 * 1024):
 
             outfile.truncate(origsize)
 
-
-# def get_file_list(backupDirectory):
-
-#     filelist = []
-#     for root, subFolders, files in os.walk(backupDirectory):
-#         for file in files:
-#             fname = os.path.join(root, file)
-#             filelist.append(fname)
-#     return filelist
 
 def get_file_list(backupDirectory):
     for root, subFolders, files in os.walk(backupDirectory):
