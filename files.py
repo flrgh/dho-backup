@@ -186,7 +186,7 @@ class File(object):
     #     return is_uploaded(self.bucket.name, self.name)
 
     def __repr__(self):
-        return "<File %s, last modified %s>" % (self.name, self.nice_time().strftime('%Y-%m-%d %H:%M:%S'))
+        return "<File %s, last modified %s>" % (self.name, self.nice_time(string_format=True))
 
 
 def logit(message):
