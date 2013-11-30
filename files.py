@@ -22,11 +22,10 @@ class Backup_Zone(object):
         self.encrypt = encrypt
         self.ekey = ekey
         self.bucket_contents = {
-            key.name.decode('utf-8'):{
+            key.name.encode('utf-8'):{
                 'last_modified': key.last_modified,
                 'etag': key.etag.strip('"')
         } for key in dho_connect().get_bucket(self.bucketname).list()}
-        #self.key_names = [k.name for k in self.bucket_contents]
         return
 
     def backup_all(self, testing=False):
@@ -87,7 +86,7 @@ class Backup_Zone(object):
         return stats
 
     def file_exists(self, file):
-        return file.keyname.decode('utf-8') in self.bucket_contents.keys()
+        return file.keyname.encode('utf-8') in self.bucket_contents.keys()
 
     def is_stale(self, file):
         
