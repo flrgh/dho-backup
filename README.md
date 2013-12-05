@@ -1,5 +1,10 @@
-Backup your files to DreamObjects
+Backup your files to dreamobjects
 =================================
+
+### Required libraries:
+
+* Pycrypto
+* Boto
 
 ### Configuration
 
