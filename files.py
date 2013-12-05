@@ -129,6 +129,14 @@ class File(object):
         return
 
     def nice_time(self, string_format=False):
+        ''' Converts the file's Unix timestamp to a datetime
+            object.
+
+            string_format:
+                If this is true, return a string format of the
+                datetime instead (default is false)
+        '''
+
         t = epoch_to_datetime(self.last_modified)
         if string_format:
             return t.strftime('%Y-%m-%d %H:%M:%S')
@@ -136,14 +144,18 @@ class File(object):
             return t
 
     def get_checksum(self):
+        ''' Returns the md5 checksum of the file and
+            caches it for quicker retrieval later
+        '''
+
         if not self.checksum:
             self.checksum = md5_checksum(self.name)
         return self.checksum
 
     def upload_new(self):
+        '''Upload a new file to DreamObjects'''
 
-        # If it's not already uploaded, make a new s3 object and upload the
-        # file
+        # Check if the file should be encrypted locally before uploading
         if self.encryptOnUpload:
             src_file = '/tmp/bakkkk' + \
                 ''.join([str(random.randrange(2 ** 16)) for i in range(4)])
@@ -155,11 +167,13 @@ class File(object):
             k = dho_connect().get_bucket(self.bucketname).new_key(self.name)
             k.set_contents_from_filename(self.name)
 
+        # Always make the uploaded key private
         k.set_canned_acl('private')
 
         return
 
     def upload_modified(self):
+        '''Re-upload a file that has been modified.'''
 
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
@@ -168,6 +182,8 @@ class File(object):
         return
 
     def delete_remote(self):
+        ''' Delete a file's corresponding key on DreamObjects'''
+
         k = dho_connect().get_bucket(self.bucketname).get_key(self.name)
         k.delete()
         return
@@ -178,6 +194,8 @@ class File(object):
 
 
 def logit(message):
+    ''' Writes a timestamp and message to the global log file'''
+
     l = open(logFile, 'a')
     l.write('{the_time}: {the_message}\n'.format(
         the_time=time.strftime('%H:%M:%S'), the_message=message))
@@ -185,6 +203,15 @@ def logit(message):
 
 
 def rotate_logs(logfile, maxlogs=7):
+    ''' Deletes oldest logs until there are only n left.
+
+        logfile:
+            Most recent log filename. We'll use glob to get the other
+            log files
+
+        maxlogs:
+            Maximum number of logs to keep. Default is 7.
+    '''
 
     def logname_to_date(logname):
         datestring = logname.split('.')[-2]
@@ -198,6 +225,14 @@ def rotate_logs(logfile, maxlogs=7):
 
 
 def gzip_file(infile, outfile=None):
+    ''' Uses gzip to compress a file
+
+        infile:
+            Filename to be compressed
+
+        outfile:
+            If none is specified, this is <infile> + ".gz"
+    '''
 
     if not outfile:
         outfile = infile + ".gz"
@@ -216,15 +251,22 @@ def gzip_file(infile, outfile=None):
 
 
 def datetime_to_epoch(time_string):
+    ''' Parses a time tring and returns a Unix style timestamp'''
+
     t = dateutil.parser.parse(time_string)
     return calendar.timegm(t.utctimetuple())
 
 
 def epoch_to_datetime(epoch_time_int):
+    ''' Translates a Unix style timestamp (int) and returns
+        a datetime object.
+    '''
     return datetime.datetime.fromtimestamp(epoch_time_int)
 
 
 def md5_checksum(filename, block_size=1024 * 128):
+    ''' Given a filename, returns the md5 checksum of that file'''
+
     md5 = hashlib.md5()
     with open(filename, 'rb') as f:
         for chunk in iter(lambda: f.read(block_size), b''):
@@ -302,6 +344,9 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24 * 1024):
 
 
 def get_file_list(backupDirectory):
+    ''' Given a directory, returns a generator with all files
+        within that directory and its subdirectories
+    '''
     for root, subFolders, files in os.walk(backupDirectory):
         for file in files:
             yield os.path.join(root, file)
