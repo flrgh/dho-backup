@@ -119,6 +119,7 @@ class File(object):
         self.name = os.path.abspath(filename)
         self.keyname = self.name.lstrip('/') # For now
         self.parent_directory = os.path.split(self.name)[0]
+        self.shortname = os.path.split(self.name)[1]
         self.size = os.path.getsize(self.name)
         self.last_modified = os.path.getmtime(self.name)
         self.checksum = None
@@ -157,14 +158,13 @@ class File(object):
 
         # Check if the file should be encrypted locally before uploading
         if self.encryptOnUpload:
-            src_file = '/tmp/bakkkk' + \
-                ''.join([str(random.randrange(2 ** 16)) for i in range(4)])
+            src_file = os.path.join(self.parent_directory, '.' + self.shortname + '.enc')
             encrypt_file(self.ekey, self.name, src_file)
-            k = dho_connect().get_bucket(self.bucketname).new_key(self.name)
+            k = dho_connect().get_bucket(self.bucketname).new_key(self.keyname)
             k.set_contents_from_filename(src_file)
             os.unlink(src_file)
         else:
-            k = dho_connect().get_bucket(self.bucketname).new_key(self.name)
+            k = dho_connect().get_bucket(self.bucketname).new_key(self.keyname)
             k.set_contents_from_filename(self.name)
 
         # Always make the uploaded key private
@@ -175,7 +175,11 @@ class File(object):
     def upload_modified(self):
         '''Re-upload a file that has been modified.'''
 
+        # Refresh the file's timestamp
         self.last_modified = os.path.getmtime(self.name)
+        
+        # Reset the file's stored md5 checksum so that it
+        # must be re-checked later
         self.checksum = None
         self.delete_remote()
         self.upload_new()
