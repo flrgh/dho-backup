@@ -1,4 +1,4 @@
-Backup your files to dreamobjects
+Encrypted backups to DreamObjects with Python
 =================================
 
 ### Required libraries:
