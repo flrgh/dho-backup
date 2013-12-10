@@ -10,11 +10,3 @@ def dho_connect():
         host='objects.dreamhost.com',
         calling_format=boto.s3.connection.OrdinaryCallingFormat(),
     )
-
-
-def is_uploaded(bucketname, keyname):
-    bucket = dho_connect().get_bucket(bucketname)
-    if not bucket.get_key(keyname):
-        return False
-    else:
-        return True

@@ -10,7 +10,7 @@ import time
 import glob
 import gzip
 
-from dho import dho_connect, is_uploaded
+from dho import dho_connect
 from config import logFile
 
 
