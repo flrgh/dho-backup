@@ -95,7 +95,7 @@ class Backup_Zone(object):
         if file.encryptOnUpload:
             return file.last_modified > datetime_to_epoch(k['last_modified'])
         else:
-            return (file.last_modified > datetime_to_epoch(k['last_modified'])) and not (self.get_checksum() == k['etag'])
+            return (file.last_modified > datetime_to_epoch(k['last_modified'])) and not (file.get_checksum() == k['etag'])
 
 
     def check_orphaned(self, delete_orphaned=False):
