@@ -1,0 +1,9 @@
+DateTime==4.0.1
+boto==2.25.0
+pycrypto==2.6.1
+python-dateutil==2.2
+pytz==2013.9
+six==1.5.2
+wsgiref==0.1.2
+yolk==0.4.3
+zope.interface==4.1.0
