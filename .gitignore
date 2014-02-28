@@ -1,2 +1,6 @@
 config.py
 *.pyc
+bin
+.Python
+include
+lib
