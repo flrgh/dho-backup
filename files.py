@@ -7,12 +7,9 @@ import dateutil.parser
 import calendar
 import datetime
 import time
-import glob
 import gzip
-import logging
 
 from dho import dho_connect
-from config import logFile
 
 
 class Backup_Zone(object):

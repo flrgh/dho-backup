@@ -1,7 +1,8 @@
 import time
 import dho
+import hashlib
 import logging
-from config import backupList, logFile, enckey
+from config import backupList, logFile, password
 from files import Backup_Zone, gzip_file
 
 
@@ -20,6 +21,8 @@ def main():
     logger.info('Hold on to your butts. Backup starting.')
 
     totals = [0, 0, 0]
+
+    enckey = hashlib.sha256(password).digest()
 
     for backup_object in backupList:
 
