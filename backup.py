@@ -9,7 +9,7 @@ def main():
 
     logger = logging.getLogger('backup')
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler(logFile)
+    fh = logging.handlers.TimedRotatingFileHandler(logFile, when='D', backupCount=5)
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(
         logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -73,6 +73,7 @@ def main():
     #logit(stats)
     #gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
     #rotate_logs(logFile)
+    fh.doRollover()
 
     return
 

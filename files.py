@@ -52,11 +52,11 @@ class Backup_Zone(object):
                         stats['new'].append(f.name)
 
                     except KeyboardInterrupt:
-                        self.logger.info("User skipped: " + f.name)
+                        self.logger.warning("User skipped: " + f.name)
                         stats['skipped'].append(f.name)
 
                     except:
-                        self.logger.info("Upload failed: " + f.name)
+                        self.logger.error("Upload failed: " + f.name)
 
             elif self.is_stale(f):
                 self.logger.info("Uploading modified: " + f.name)
@@ -67,11 +67,11 @@ class Backup_Zone(object):
                         stats['modified'].append(f.name)
 
                     except KeyboardInterrupt:
-                        self.logger.info("User skipped: " + f.name)
+                        self.logger.warning("User skipped: " + f.name)
                         stats['skipped'].append(f.name)
 
                     except:
-                        self.logger.info("Upload failed: " + f.name)
+                        self.logger.error("Upload failed: " + f.name)
             else:
                 if testing:
                     print "Unmodified: " + f.name
@@ -197,37 +197,6 @@ class File(object):
 
     def __repr__(self):
         return "<File %s, last modified %s>" % (self.name, self.nice_time(string_format=True))
-
-
-def logit(message):
-    ''' Writes a timestamp and message to the global log file'''
-
-    l = open(logFile, 'a')
-    l.write('{the_time}: {the_message}\n'.format(
-        the_time=time.strftime('%H:%M:%S'), the_message=message))
-    l.close()
-
-
-def rotate_logs(logfile, maxlogs=7):
-    ''' Deletes oldest logs until there are only n left.
-
-        logfile:
-            Most recent log filename. We'll use glob to get the other
-            log files
-
-        maxlogs:
-            Maximum number of logs to keep. Default is 7.
-    '''
-
-    def logname_to_date(logname):
-        datestring = logname.split('.')[-2]
-        return dateutil.parser.parse(datestring)
-
-    logfiles = sorted(glob.glob(logfile + ".*.gz"), key=logname_to_date)
-
-    while len(logfiles) > maxlogs:
-        os.unlink(logfiles.pop(0))
-    return
 
 
 def gzip_file(infile, outfile=None):
