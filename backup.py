@@ -2,7 +2,7 @@ import time
 import dho
 import logging
 from config import backupList, logFile, enckey
-from files import Backup_Zone, logit, rotate_logs, gzip_file
+from files import Backup_Zone, gzip_file
 
 
 def main():
@@ -70,9 +70,7 @@ def main():
     )
 
     print stats
-    #logit(stats)
     #gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
-    #rotate_logs(logFile)
     fh.doRollover()
 
     return
