@@ -1,13 +1,23 @@
 import time
 import dho
+import logging
 from config import backupList, logFile, enckey
 from files import Backup_Zone, logit, rotate_logs, gzip_file
 
 
-if __name__ == '__main__':
+def main():
+
+    logger = logging.getLogger('backup')
+    logger.setLevel(logging.DEBUG)
+    fh = logging.handlers.TimedRotatingFileHandler(logFile, when='D', backupCount=5)
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(
+        logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    )
+    logger.addHandler(fh)
 
     startTime = time.time()
-    logit('Backup starting...')
+    logger.info('Hold on to your butts. Backup starting.')
 
     totals = [0, 0, 0]
 
@@ -16,11 +26,12 @@ if __name__ == '__main__':
         bz = Backup_Zone(
             backup_object['directory'],
             backup_object['bucket'],
+            logger,
             backup_object['encrypt'],
             enckey
         )
 
-        logit('''Backing up [{directory}] to bucket [{bucket}] now.'''.format(
+        logger.info('''Backing up [{directory}] to bucket [{bucket}] now.'''.format(
             directory=bz.directory, bucket=bz.bucketname))
 
         statistics = bz.backup_all()
@@ -34,7 +45,7 @@ if __name__ == '__main__':
 
         delim = '\n' + ('-' * 90)
 
-        logit(finished + delim)
+        logger.info(finished)
 
         totals[0] += (len(statistics['new']) + len(statistics['modified']))
         totals[1] += len(statistics['skipped'])
@@ -59,6 +70,12 @@ if __name__ == '__main__':
     )
 
     print stats
-    logit(stats)
-    gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
-    rotate_logs(logFile)
+    #logit(stats)
+    #gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
+    #rotate_logs(logFile)
+    fh.doRollover()
+
+    return
+
+if __name__ == '__main__':
+    main()
