@@ -1,0 +1,44 @@
+[settings]
+
+# Your DreamObjects keys
+access_key = 
+secret_key =
+
+# Secret passphrase for encrypting files
+passphrase = 
+
+
+# Logging options
+
+# Log level (options: INFO, DEBUG, WARNING, ERROR)
+log_level = 
+
+# Path and location of log file
+log_file  = 
+
+# Number of old log files to keep
+max_logs  = 
+
+
+# BACKUP ZONES:
+# 
+# Create sections below for each directory you'd like to keep backed up,
+# using the following format:
+#
+# [backup_nickname]
+# directory      = <directory to be backed up>
+# bucket         = <dest bucket for backup>
+# encrypt        = <(true|false)>
+# skip_filetypes = <file types to ignore>
+# exclude        = <specific files/directories to ignore> 
+#
+#
+# EXAMPLE:
+# [my_backup]
+# directory = /path/to/the/files
+# bucket = my_bucketname
+# encrypt = true
+# skip_filetypes = mp3, docx
+# exclude = /path/to/the/files/but/not/this/one.iso
+#
+#
