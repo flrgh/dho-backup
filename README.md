@@ -18,3 +18,5 @@ Run the `backup.py` script to backup everything. Set this up as a cron for autom
 
 * Use ConfigParser for .ini config files instead of config.py
 * Incorporate command line flags for runtime configuration and options
+* Implement options to exlcude certain directories/files and filetypes
+* The all-important restore feaure

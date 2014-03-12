@@ -2,15 +2,27 @@ import time
 import dho
 import hashlib
 import logging
-from config import backupList, logFile, password
+import os
+from configuration import parse_config
 from files import Backup_Zone, gzip_file
 
 
 def main():
 
+    # Parse config file
+    config = parse_config('backup.conf')
+
+    os.environ['dho_access_key'] = config['dho_access_key']
+    os.environ['dho_secret_key'] = config['dho_secret_key'] 
+        
+    # Set up logging
     logger = logging.getLogger('backup')
-    logger.setLevel(logging.DEBUG)
-    fh = logging.handlers.TimedRotatingFileHandler(logFile, when='D', backupCount=5)
+    logger.setLevel(logging.__getattribute__(config['log_level']))
+    fh = logging.handlers.TimedRotatingFileHandler(
+        config['log_file'],
+        when='D',
+        backupCount=config['max_logs']
+    )
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(
         logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -22,9 +34,9 @@ def main():
 
     totals = [0, 0, 0]
 
-    enckey = hashlib.sha256(password).digest()
+    enckey = hashlib.sha256(config['passphrase']).digest()
 
-    for backup_object in backupList:
+    for backup_object in config['backup_zones']:
 
         bz = Backup_Zone(
             backup_object['directory'],

@@ -11,13 +11,13 @@ passphrase =
 # Logging options
 
 # Log level (options: INFO, DEBUG, WARNING, ERROR)
-log_level = 
+; log_level = 
 
 # Path and location of log file
 log_file  = 
 
 # Number of old log files to keep
-max_logs  = 
+; max_logs  = 
 
 
 # BACKUP ZONES:
@@ -29,8 +29,8 @@ max_logs  =
 # directory      = <directory to be backed up>
 # bucket         = <dest bucket for backup>
 # encrypt        = <(true|false)>
-# skip_filetypes = <file types to ignore>
-# exclude        = <specific files/directories to ignore> 
+# skip_filetypes = <[optional] file types to ignore>
+# exclude        = <[optional] specific files/directories to ignore> 
 #
 #
 # EXAMPLE:

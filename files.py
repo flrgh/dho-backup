@@ -1,15 +1,14 @@
+from Crypto.Cipher import AES
+from dho import dho_connect
+import calendar
+import datetime
+import dateutil.parser
+import gzip
+import hashlib
 import os
 import random
 import struct
-import hashlib
-from Crypto.Cipher import AES
-import dateutil.parser
-import calendar
-import datetime
 import time
-import gzip
-
-from dho import dho_connect
 
 
 class Backup_Zone(object):
@@ -54,6 +53,7 @@ class Backup_Zone(object):
 
                     except:
                         self.logger.error("Upload failed: " + f.name)
+                        self.logger.exception("Error/Exception detected:")
 
             elif self.is_stale(f):
                 self.logger.info("Uploading modified: " + f.name)
@@ -69,6 +69,7 @@ class Backup_Zone(object):
 
                     except:
                         self.logger.error("Upload failed: " + f.name)
+                        self.logger.exception("Error/Exception detected:")
             else:
                 if testing:
                     print "Unmodified: " + f.name
@@ -116,7 +117,7 @@ class File(object):
 
     def __init__(self, filename, backup_bucket_name, encrypt_upload, ekey=None):
         self.name = os.path.abspath(filename)
-        self.keyname = self.name.lstrip('/') # For now
+        self.keyname = self.name.lstrip('/')
         self.parent_directory = os.path.split(self.name)[0]
         self.shortname = os.path.split(self.name)[1]
         self.size = os.path.getsize(self.name)
