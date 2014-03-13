@@ -8,7 +8,7 @@ Encrypted backups to DreamObjects with Python
 
 ### Configuration
 
-Rename/copy `config.example.py` to `config.py` and edit appropriately.
+Rename/copy `backup.conf.sample` to `backup.conf` and edit appropriately.
 
 ### Performing backups
 

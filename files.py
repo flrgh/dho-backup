@@ -3,6 +3,7 @@ from dho import dho_connect
 import calendar
 import datetime
 import dateutil.parser
+import fnmatch
 import gzip
 import hashlib
 import os
@@ -13,11 +14,12 @@ import time
 
 class Backup_Zone(object):
 
-    def __init__(self, directory, bucket, logger, encrypt=False, ekey=None):
+    def __init__(self, directory, bucket, logger, encrypt=False, ekey=None, exclude=[]):
         self.directory = directory
         self.bucketname = bucket
         self.logger = logger
         self.encrypt = encrypt
+        self.exclude = exclude
         self.ekey = ekey
         self.bucket_contents = {
             key.name.encode('utf-8'):{
@@ -37,9 +39,15 @@ class Backup_Zone(object):
         }
 
         for fname in get_file_list(self.directory):
+
+            if self.skip(fname):
+                self.logger.debug("Skipped: " + fname)
+                stats['skipped'].append(fname)
+                continue
+
             f = File(fname, self.bucketname, self.encrypt, self.ekey)
 
-            if not self.file_exists(f):
+            if not self.file_exists_in_dho(f):
                 self.logger.info("Uploading new: " + f.name)
 
                 if not testing:
@@ -85,7 +93,7 @@ class Backup_Zone(object):
 
         return stats
 
-    def file_exists(self, file):
+    def file_exists_in_dho(self, file):
         return file.keyname in self.bucket_contents.keys()
 
     def is_stale(self, file):
@@ -112,6 +120,12 @@ class Backup_Zone(object):
             orphaned.append(k.name)
         return orphaned
 
+    
+    def skip(self, filename):
+        for ex in self.exclude:
+            if fnmatch.fnmatch(filename, ex):     
+                return True
+        return False
 
 class File(object):
 

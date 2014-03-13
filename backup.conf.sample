@@ -29,16 +29,15 @@ log_file  =
 # directory      = <directory to be backed up>
 # bucket         = <dest bucket for backup>
 # encrypt        = <(true|false)>
-# skip_filetypes = <[optional] file types to ignore>
-# exclude        = <[optional] specific files/directories to ignore> 
+# exclude        = <[optional] specific files/directories to ignore--globs/wildcards work here> 
 #
 #
 # EXAMPLE:
 # [my_backup]
-# directory = /path/to/the/files
+# directory = /backup_dir
 # bucket = my_bucketname
 # encrypt = true
 # skip_filetypes = mp3, docx
-# exclude = /path/to/the/files/but/not/this/one.iso
+# exclude = /backup_dir/but_not_this_file.txt, /backup_dir/but/not_this_directory, *.docx
 #
 #

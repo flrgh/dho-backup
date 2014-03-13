@@ -1,3 +1,4 @@
+import os
 from ConfigParser import SafeConfigParser
 
 def parse_config(conf_file):
@@ -7,7 +8,7 @@ def parse_config(conf_file):
         'log_level'      : 'INFO',
         'max_logs'       : '5',
         'skip_filetypes' : '',
-        'exclude'        : ''
+        'exclude'        : [], 
     }
     parser = SafeConfigParser(defaults=defaults)
     parser.read(conf_file)
@@ -27,9 +28,15 @@ def parse_config(conf_file):
                     'directory'      : parser.get(section, 'directory'),
                     'bucket'         : parser.get(section, 'bucket'),
                     'encrypt'        : parser.getboolean(section, 'encrypt'), 
-                    'skip_filetypes' : parser.get(section, 'skip_filetypes'),
-                    'exclude'        : parser.get(section, 'exclude')
+                    'exclude'        : map(parse_excludes, (ex.strip() for ex in parser.get(section, 'exclude').split(','))),
                 }
             )
 
     return conf
+
+
+def parse_excludes(exclusion):
+    if os.path.isdir(exclusion):
+        return exclusion.rstrip('/') + '/*'
+    else:
+        return exclusion

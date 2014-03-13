@@ -43,7 +43,8 @@ def main():
             backup_object['bucket'],
             logger,
             backup_object['encrypt'],
-            enckey
+            enckey,
+            exclude=backup_object['exclude']
         )
 
         logger.info('''Backing up [{directory}] to bucket [{bucket}] now.'''.format(
