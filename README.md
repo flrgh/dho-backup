@@ -21,3 +21,4 @@ Run the `backup.py` script to backup everything. Set this up as a cron for autom
 
 * Incorporate command line flags for runtime configuration and options
 * The all-important restore feaure
+* Auto-split large files and use multi-part upload
