@@ -5,6 +5,9 @@ Encrypted backups to DreamObjects with Python
 
 * Pycrypto
 * Boto
+* Dateutil
+
+(`pip install -r requirements.txt` should take care of these.)
 
 ### Configuration
 
