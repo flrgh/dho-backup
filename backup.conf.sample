@@ -37,7 +37,6 @@ log_file  =
 # directory = /backup_dir
 # bucket = my_bucketname
 # encrypt = true
-# skip_filetypes = mp3, docx
 # exclude = /backup_dir/but_not_this_file.txt, /backup_dir/but/not_this_directory, *.docx
 #
 #
