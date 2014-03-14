@@ -13,9 +13,9 @@ def parse_config(conf_file):
     parser = SafeConfigParser(defaults=defaults)
     parser.read(conf_file)
     conf = {}
-    conf['dho_access_key'] = parser.get('settings', 'access_key')
-    conf['dho_secret_key'] = parser.get('settings', 'secret_key')
-    conf['passphrase']     = parser.get('settings', 'passphrase')
+    conf['dho_access_key'] = parser.get('settings', 'access_key', raw=True)
+    conf['dho_secret_key'] = parser.get('settings', 'secret_key', raw=True)
+    conf['passphrase']     = parser.get('settings', 'passphrase', raw=True)
     conf['log_level']      = parser.get('settings', 'log_level')
     conf['log_file']       = parser.get('settings', 'log_file')
     conf['max_logs']       = parser.getint('settings', 'max_logs')
