@@ -9,7 +9,6 @@ import hashlib
 import os
 import random
 import struct
-import time
 
 
 class Backup_Zone(object):
@@ -63,8 +62,8 @@ class Backup_Zone(object):
                         self.logger.error("Upload failed: " + f.name)
                         self.logger.exception("Error/Exception detected:")
 
-            elif self.is_stale(f):
-                self.logger.info("Uploading modified: " + f.name)
+                elif self.is_stale(f):
+                    self.logger.info("Uploading modified: " + f.name)
 
                 if not testing:
                     try:
@@ -78,11 +77,11 @@ class Backup_Zone(object):
                     except:
                         self.logger.error("Upload failed: " + f.name)
                         self.logger.exception("Error/Exception detected:")
-            else:
-                if testing:
-                    print "Unmodified: " + f.name
-                stats['unmodified'].append(f.name)
-                self.logger.info("Unmodified: " + f.name)
+                else:
+                    if testing:
+                        print "Unmodified: " + f.name
+                        stats['unmodified'].append(f.name)
+                        self.logger.info("Unmodified: " + f.name)
 
         if testing:
             print "New files uploaded: %d" % len(stats['new'])
@@ -117,7 +116,7 @@ class Backup_Zone(object):
                     self.logger.info('Orphaned: ' + k.name)
 
             orphaned.append(k.name)
-        return orphaned
+            return orphaned
 
     def skip(self, filename):
         for ex in self.exclude:
@@ -144,12 +143,12 @@ class File(object):
 
     def nice_time(self, string_format=False):
         ''' Converts the file's Unix timestamp to a datetime
-            object.
+        object.
 
             string_format:
                 If this is true, return a string format of the
                 datetime instead (default is false)
-        '''
+                '''
 
         t = epoch_to_datetime(self.last_modified)
         if string_format:
@@ -159,12 +158,12 @@ class File(object):
 
     def get_checksum(self):
         ''' Returns the md5 checksum of the file and
-            caches it for quicker retrieval later
+        caches it for quicker retrieval later
         '''
 
         if not self.checksum:
             self.checksum = md5_checksum(self.name)
-        return self.checksum
+            return self.checksum
 
     def upload_new(self):
         '''Upload a new file to DreamObjects'''
@@ -217,7 +216,7 @@ def gzip_file(infile, outfile=None):
 
         outfile:
             If none is specified, this is <infile> + ".gz"
-    '''
+            '''
 
     if not outfile:
         outfile = infile + ".gz"
@@ -244,7 +243,7 @@ def datetime_to_epoch(time_string):
 
 def epoch_to_datetime(epoch_time_int):
     ''' Translates a Unix style timestamp (int) and returns
-        a datetime object.
+    a datetime object.
     '''
     return datetime.datetime.fromtimestamp(epoch_time_int)
 
@@ -256,12 +255,12 @@ def md5_checksum(filename, block_size=1024 * 128):
     with open(filename, 'rb') as f:
         for chunk in iter(lambda: f.read(block_size), b''):
             md5.update(chunk)
-    return md5.hexdigest()
+            return md5.hexdigest()
 
 
 def encrypt_file(key, in_filename, out_filename=None, chunksize=64 * 1024):
     """ Encrypts a file using AES (CBC mode) with the
-        given key.
+    given key.
 
         key:
             The encryption key - a string that must be
@@ -279,7 +278,7 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64 * 1024):
             uses to read and encrypt the file. Larger chunk
             sizes can be faster for some files and machines.
             chunksize must be divisible by 16.
-    """
+            """
     if not out_filename:
         out_filename = in_filename + '.enc'
 
@@ -304,11 +303,11 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64 * 1024):
 
 def decrypt_file(key, in_filename, out_filename=None, chunksize=24 * 1024):
     """ Decrypts a file using AES (CBC mode) with the
-        given key. Parameters are similar to encrypt_file,
-        with one difference: out_filename, if not supplied
-        will be in_filename without its last extension
-        (i.e. if in_filename is 'aaa.zip.enc' then
-        out_filename will be 'aaa.zip')
+    given key. Parameters are similar to encrypt_file,
+    with one difference: out_filename, if not supplied
+    will be in_filename without its last extension
+    (i.e. if in_filename is 'aaa.zip.enc' then
+    out_filename will be 'aaa.zip')
     """
     if not out_filename:
         out_filename = os.path.splitext(in_filename)[0]
@@ -330,7 +329,7 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24 * 1024):
 
 def get_file_list(backupDirectory):
     ''' Given a directory, returns a generator with all files
-        within that directory and its subdirectories
+    within that directory and its subdirectories
     '''
     for root, subFolders, files in os.walk(backupDirectory):
         for file in files:

@@ -8,7 +8,7 @@ def parse_config(conf_file):
         'log_level'      : 'INFO',
         'max_logs'       : '5',
         'skip_filetypes' : '',
-        'exclude'        : [], 
+        'exclude'        : [],
     }
     parser = SafeConfigParser(defaults=defaults)
     parser.read(conf_file)
@@ -27,7 +27,7 @@ def parse_config(conf_file):
                 {
                     'directory'      : parser.get(section, 'directory'),
                     'bucket'         : parser.get(section, 'bucket'),
-                    'encrypt'        : parser.getboolean(section, 'encrypt'), 
+                    'encrypt'        : parser.getboolean(section, 'encrypt'),
                     'exclude'        : map(parse_excludes, (ex.strip() for ex in parser.get(section, 'exclude').split(','))),
                 }
             )

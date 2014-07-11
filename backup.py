@@ -1,10 +1,9 @@
 import time
-import dho
 import hashlib
 import logging
 import os
 from configuration import parse_config
-from files import Backup_Zone, gzip_file
+from files import Backup_Zone
 
 
 def main():
@@ -59,7 +58,7 @@ def main():
             failed=len(statistics['failed']),
         )
 
-        delim = '\n' + ('-' * 90)
+        # delim = '\n' + ('-' * 90)
 
         logger.info(finished)
 
