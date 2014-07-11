@@ -22,10 +22,10 @@ class Backup_Zone(object):
         self.exclude = exclude
         self.ekey = ekey
         self.bucket_contents = {
-            key.name.encode('utf-8'):{
+            key.name.encode('utf-8'): {
                 'last_modified': key.last_modified,
                 'etag': key.etag.strip('"')
-        } for key in dho_connect().get_bucket(self.bucketname).list()}
+            } for key in dho_connect().get_bucket(self.bucketname).list()}
         return
 
     def backup_all(self, testing=False):
@@ -97,14 +97,13 @@ class Backup_Zone(object):
         return file.keyname in self.bucket_contents.keys()
 
     def is_stale(self, file):
-        
+
         k = self.bucket_contents.get(file.keyname)
 
         if file.encryptOnUpload:
             return file.last_modified > datetime_to_epoch(k['last_modified'])
         else:
             return (file.last_modified > datetime_to_epoch(k['last_modified'])) and not (file.get_checksum() == k['etag'])
-
 
     def check_orphaned(self, delete_orphaned=False):
 
@@ -120,12 +119,12 @@ class Backup_Zone(object):
             orphaned.append(k.name)
         return orphaned
 
-    
     def skip(self, filename):
         for ex in self.exclude:
-            if fnmatch.fnmatch(filename, ex):     
+            if fnmatch.fnmatch(filename, ex):
                 return True
         return False
+
 
 class File(object):
 
@@ -191,7 +190,7 @@ class File(object):
 
         # Refresh the file's timestamp
         self.last_modified = os.path.getmtime(self.name)
-        
+
         # Reset the file's stored md5 checksum so that it
         # must be re-checked later
         self.checksum = None
@@ -205,7 +204,6 @@ class File(object):
         k = dho_connect().get_bucket(self.bucketname).get_key(self.name)
         k.delete()
         return
-
 
     def __repr__(self):
         return "<File %s, last modified %s>" % (self.name, self.nice_time(string_format=True))
