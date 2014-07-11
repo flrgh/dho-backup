@@ -13,8 +13,8 @@ def main():
     config = parse_config('backup.conf')
 
     os.environ['dho_access_key'] = config['dho_access_key']
-    os.environ['dho_secret_key'] = config['dho_secret_key'] 
-        
+    os.environ['dho_secret_key'] = config['dho_secret_key']
+
     # Set up logging
     logger = logging.getLogger('backup')
     logger.setLevel(logging.__getattribute__(config['log_level']))
@@ -86,7 +86,7 @@ def main():
     )
 
     print stats
-    #gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
+    # gzip_file(logFile, (logFile + "." + time.strftime('%Y-%m-%d') + ".gz"))
     fh.doRollover()
 
     return
